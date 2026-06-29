@@ -1,37 +1,38 @@
 import { NextResponse } from "next/server";
+import { mkdir, readFile, writeFile } from "node:fs/promises";
+import path from "node:path";
 
 type NewsletterPayload = {
-  name?: string;
   email?: string;
-  phone?: string;
-  interest?: string;
   source?: string;
 };
 
 const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-const phonePattern = /^(\+?84|0)(3|5|7|8|9)\d{8}$/;
+const storagePath = path.join(process.cwd(), ".data", "newsletter-submissions.json");
+
+export const runtime = "nodejs";
+
+async function persistSubmission(payload: Record<string, string>) {
+  await mkdir(path.dirname(storagePath), { recursive: true });
+
+  const existing: Array<Record<string, string>> = await readFile(storagePath, "utf8")
+    .then((content) => JSON.parse(content) as Array<Record<string, string>>)
+    .catch(() => [] as Array<Record<string, string>>);
+
+  existing.push(payload);
+  await writeFile(storagePath, JSON.stringify(existing, null, 2));
+}
 
 export async function POST(request: Request) {
   const body = (await request.json().catch(() => null)) as NewsletterPayload | null;
 
-  if (!body?.name || body.name.trim().length < 2) {
-    return NextResponse.json({ message: "Ten can toi thieu 2 ky tu." }, { status: 400 });
-  }
-
-  if (!body.email || !emailPattern.test(body.email)) {
-    return NextResponse.json({ message: "Email chua hop le." }, { status: 400 });
-  }
-
-  if (body.phone && !phonePattern.test(body.phone.replace(/\s/g, ""))) {
-    return NextResponse.json({ message: "So dien thoai Viet Nam chua hop le." }, { status: 400 });
+  if (!body?.email || !emailPattern.test(body.email)) {
+    return NextResponse.json({ message: "Please enter a valid email address." }, { status: 400 });
   }
 
   const payload = {
-    name: body.name.trim(),
     email: body.email.trim().toLowerCase(),
-    phone: body.phone?.trim() ?? "",
-    interest: body.interest ?? "product-news",
-    source: body.source ?? "landing-page",
+    source: body.source ?? "auraband-landing",
     submittedAt: new Date().toISOString()
   };
 
@@ -43,8 +44,14 @@ export async function POST(request: Request) {
     });
   }
 
+  try {
+    await persistSubmission(payload);
+  } catch (error) {
+    console.warn("Local storage persistence not available (e.g. serverless environment):", error);
+  }
+
   return NextResponse.json({
-    message: "Dang ky thanh cong. Team se gui ban thong tin san pham som nhat.",
+    message: "Subscribed. AuraBand X updates are on the way.",
     data: payload
   });
 }
