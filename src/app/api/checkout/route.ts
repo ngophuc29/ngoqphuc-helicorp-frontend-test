@@ -21,12 +21,12 @@ const storagePath = path.join(process.cwd(), ".data", "orders.json");
 
 export const runtime = "nodejs";
 
-async function persistOrder(order: Record<string, any>) {
+async function persistOrder(order: Record<string, unknown>) {
   await mkdir(path.dirname(storagePath), { recursive: true });
 
-  const existing: Array<Record<string, any>> = await readFile(storagePath, "utf8")
-    .then((content) => JSON.parse(content) as Array<Record<string, any>>)
-    .catch(() => [] as Array<Record<string, any>>);
+  const existing: Array<Record<string, unknown>> = await readFile(storagePath, "utf8")
+    .then((content) => JSON.parse(content) as Array<Record<string, unknown>>)
+    .catch(() => [] as Array<Record<string, unknown>>);
 
   existing.push(order);
   await writeFile(storagePath, JSON.stringify(existing, null, 2));

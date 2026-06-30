@@ -126,6 +126,10 @@ export default function LandingPage() {
     window.setTimeout(() => setToast(null), 3200);
   }, []);
 
+  const trackClick = useCallback((elementName: string) => {
+    showToast({ text: `Click on "${elementName}" tracked.`, tone: "info" });
+  }, [showToast]);
+
   // Track scroll behavior & Back to Top visibility
   useEffect(() => {
     let tracked = false;
@@ -162,17 +166,17 @@ export default function LandingPage() {
       if (storedCart) {
         try {
           setCart(JSON.parse(storedCart));
-        } catch (_) {}
+        } catch {}
       }
       if (storedWishlist) {
         try {
           setWishlist(JSON.parse(storedWishlist));
-        } catch (_) {}
+        } catch {}
       }
       if (storedViewed) {
         try {
           setRecentlyViewed(JSON.parse(storedViewed));
-        } catch (_) {}
+        } catch {}
       }
     }, 0);
 
@@ -319,7 +323,7 @@ export default function LandingPage() {
       if (response.ok) {
         event.currentTarget.reset();
       }
-    } catch (error) {
+    } catch {
       setFormStatus("error");
       showToast({ text: "Server connection error.", tone: "error" });
     }
@@ -410,7 +414,7 @@ export default function LandingPage() {
       } else {
         showToast({ text: result.message || "Failed to place order.", tone: "error" });
       }
-    } catch (error) {
+    } catch {
       showToast({ text: "Server connection error.", tone: "error" });
     } finally {
       setCheckoutLoading(false);
@@ -446,7 +450,7 @@ export default function LandingPage() {
         ...prev,
         { sender: "bot", text: result.reply, timestamp: new Date() }
       ]);
-    } catch (error) {
+    } catch {
       setChatMessages((prev) => [
         ...prev,
         {
@@ -530,20 +534,23 @@ export default function LandingPage() {
       <div className="pageFrame">
         {/* TOPBAR */}
         <header className="topbar">
-          <a className="brand" href="#hero" aria-label="AuraBand X home">
+          <a className="brand" href="#hero" aria-label="AuraBand X home" onClick={() => trackClick("Brand Logo")}>
             AuraBand X
           </a>
           <nav aria-label="Main navigation">
-            <a href="#features">Features</a>
-            <a href="#specs">Specs</a>
-            <a href="#commerce">Shop</a>
-            <a href="#reviews">Reviews</a>
+            <a href="#features" onClick={() => trackClick("Nav: Features")}>Features</a>
+            <a href="#specs" onClick={() => trackClick("Nav: Specs")}>Specs</a>
+            <a href="#commerce" onClick={() => trackClick("Nav: Shop")}>Shop</a>
+            <a href="#reviews" onClick={() => trackClick("Nav: Reviews")}>Reviews</a>
           </nav>
           <div className="topActions">
             <button
               className="themeIconButton"
               type="button"
-              onClick={() => setDarkMode((value) => !value)}
+              onClick={() => {
+                setDarkMode((value) => !value);
+                trackClick(`Theme Toggle (${!darkMode ? "Dark" : "Light"})`);
+              }}
               aria-label="Toggle dark mode"
             >
               {darkMode ? (
@@ -559,7 +566,7 @@ export default function LandingPage() {
               type="button"
               onClick={() => {
                 setCartOpen(true);
-                showToast({ text: "Cart opened.", tone: "info" });
+                trackClick("Cart Icon");
               }}
               aria-label="Open shopping cart"
             >
@@ -580,10 +587,10 @@ export default function LandingPage() {
               Experience the next generation of wellness tracking. Precision sensors meet elegant design in the all-new AuraBand X.
             </p>
             <div className="heroActions">
-              <a className="primaryButton" href="#commerce">
+              <a className="primaryButton" href="#commerce" onClick={() => trackClick("Hero: Get Yours Today")}>
                 Get Yours Today
               </a>
-              <a className="secondaryButton" href="#features">
+              <a className="secondaryButton" href="#features" onClick={() => trackClick("Hero: Explore Features")}>
                 Explore Features
               </a>
             </div>
@@ -1058,15 +1065,43 @@ export default function LandingPage() {
       )}
 
       {/* CHATBOT */}
-      <button className="chatLauncher" type="button" onClick={() => setChatOpen((value) => !value)} aria-label="Open support chat">
-        {chatOpen ? "✕" : "Chat"}
+      <button
+        className={chatOpen ? "chatLauncher active" : "chatLauncher"}
+        type="button"
+        onClick={() => {
+          setChatOpen((value) => !value);
+          trackClick(!chatOpen ? "Chatbot Open" : "Chatbot Close");
+        }}
+        aria-label="Open support chat"
+      >
+        {chatOpen ? (
+          <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+        ) : (
+          <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+        )}
       </button>
 
       {chatOpen && (
         <aside className="chatPanel" aria-label="AuraBand support chatbot">
           <div className="chatPanelHeader">
-            <strong>AuraBot</strong>
-            <span className="onlineStatus" />
+            <div className="chatHeaderTitle">
+              <span className="onlineStatus" />
+              <div className="chatHeaderMeta">
+                <strong>AuraBot</strong>
+                <span className="chatSubtitle">AI Assistant</span>
+              </div>
+            </div>
+            <button
+              type="button"
+              className="chatCloseBtn"
+              onClick={() => {
+                setChatOpen(false);
+                trackClick("Chatbot Close");
+              }}
+              aria-label="Close chat"
+            >
+              ✕
+            </button>
           </div>
 
           <div className="chatMessagesList">
@@ -1099,12 +1134,12 @@ export default function LandingPage() {
               type="text"
               value={chatInput}
               onChange={(e) => setChatInput(e.target.value)}
-              placeholder="Type a message..."
+              placeholder="Ask AuraBot..."
               disabled={chatLoading}
               autoComplete="off"
             />
-            <button type="submit" disabled={chatLoading || !chatInput.trim()}>
-              Send
+            <button type="submit" disabled={chatLoading || !chatInput.trim()} aria-label="Send message">
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
             </button>
           </form>
         </aside>
