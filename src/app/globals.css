@@ -726,7 +726,7 @@ h1 span {
 
 .motionSection {
   overflow: hidden;
-  padding-top: 64px;
+   
 }
 
 .motionHeader {
@@ -1127,6 +1127,14 @@ blockquote {
     padding-inline: 20px;
   }
 
+  .shopSection {
+    padding-bottom: 10px;
+  }
+
+  .motionSection {
+    padding-top: 16px;
+  }
+
   .brand {
     font-size: 18px;
   }
@@ -1205,6 +1213,8 @@ blockquote {
    ========================================== */
 .shopSection {
   background: var(--panel-soft);
+  padding-bottom: 80px;
+  
 }
 
 .shopGrid {

@@ -89,7 +89,7 @@ export const products: ProductItem[] = [
     id: "auraband-x",
     name: "AuraBand X",
     price: 99,
-    description: "Vòng đeo tay sức khỏe thông minh thế hệ mới với cảm biến nhịp tim PPG độ chính xác cao và thiết kế siêu nhẹ.",
+    description: "Next-generation smart fitness band featuring high-precision PPG heart rate tracking and an ultra-lightweight design.",
     image: "/images/auraband-hero.png",
     category: "Wearable",
     meta: "Matte Black / 24g"
@@ -98,7 +98,7 @@ export const products: ProductItem[] = [
     id: "pulse-loop-strap",
     name: "Pulse Loop Strap",
     price: 29,
-    description: "Dây đeo silicone thể thao cao cấp, siêu bền, thoáng khí và kháng nước tuyệt đối.",
+    description: "Premium sport silicone strap, engineered for extreme durability, breathability, and complete water resistance.",
     image: "/images/aura-runner.png",
     category: "Strap",
     meta: "Sport silicone / teal"
@@ -107,7 +107,7 @@ export const products: ProductItem[] = [
     id: "recovery-dock",
     name: "Recovery Dock",
     price: 39,
-    description: "Đế sạc nhanh nam châm tiện lợi, sạc đầy pin thiết bị chỉ trong 45 phút.",
+    description: "Convenient magnetic fast charging dock, fully recharging your device in just 45 minutes.",
     image: "/images/auraband-technical.png",
     category: "Charger",
     meta: "Fast charge / graphite"
@@ -116,7 +116,7 @@ export const products: ProductItem[] = [
     id: "aurabuds-pro",
     name: "AuraBuds Pro",
     price: 149,
-    description: "Tai nghe chống ồn chủ động (ANC) thế hệ mới, hỗ trợ kết nối đồng bộ trực tiếp với AuraBand X.",
+    description: "Next-generation wireless earbuds featuring Active Noise Cancellation (ANC) and direct metric syncing with AuraBand X.",
     image: "/images/aura-yoga.png",
     category: "Audio",
     meta: "Active Noise Cancelling"

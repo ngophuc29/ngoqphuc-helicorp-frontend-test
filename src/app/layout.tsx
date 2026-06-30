@@ -10,7 +10,7 @@ export const metadata: Metadata = {
     template: "%s | AuraBand X"
   },
   description:
-    "AuraBand X là landing page giới thiệu vòng đeo sức khỏe thông minh với cảm biến chính xác, thời lượng pin 14 ngày và thiết kế cao cấp.",
+    "AuraBand X is a premium smart fitness wearable featuring clinical-grade tracking, a 14-day battery life, and an elegant design.",
   keywords: ["AuraBand X", "smart fitness band", "wellness tracker", "wearable", "landing page"],
   authors: [{ name: "Ngoc Phuc" }],
   openGraph: {
@@ -33,7 +33,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "AuraBand X | Your Health, Redefined",
-    description: "Landing page Next.js toi uu SEO va performance cho smart fitness band.",
+    description: "Optimized Next.js landing page for the AuraBand X smart fitness wearable, designed for peak performance and SEO.",
     images: ["/images/auraband-hero.png"]
   },
   robots: {

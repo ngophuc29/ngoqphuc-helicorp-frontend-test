@@ -49,7 +49,6 @@ export default function LandingPage() {
   // E-commerce states
   const [cart, setCart] = useState<CartItem[]>([]);
   const [wishlist, setWishlist] = useState<string[]>([]);
-  const [recentlyViewed, setRecentlyViewed] = useState<string[]>([]);
   const [cartOpen, setCartOpen] = useState(false);
   const [checkoutOpen, setCheckoutOpen] = useState(false);
   const [orderSuccess, setOrderSuccess] = useState(false);
@@ -160,7 +159,6 @@ export default function LandingPage() {
       const storedTheme = window.localStorage.getItem("auraband-theme");
       const storedCart = window.localStorage.getItem("auraband-cart");
       const storedWishlist = window.localStorage.getItem("auraband-wishlist");
-      const storedViewed = window.localStorage.getItem("auraband-viewed");
 
       setDarkMode(storedTheme === "dark");
       if (storedCart) {
@@ -171,11 +169,6 @@ export default function LandingPage() {
       if (storedWishlist) {
         try {
           setWishlist(JSON.parse(storedWishlist));
-        } catch {}
-      }
-      if (storedViewed) {
-        try {
-          setRecentlyViewed(JSON.parse(storedViewed));
         } catch {}
       }
     }, 0);
@@ -195,10 +188,6 @@ export default function LandingPage() {
   useEffect(() => {
     window.localStorage.setItem("auraband-wishlist", JSON.stringify(wishlist));
   }, [wishlist]);
-
-  useEffect(() => {
-    window.localStorage.setItem("auraband-viewed", JSON.stringify(recentlyViewed));
-  }, [recentlyViewed]);
 
   // Resize listener to adjust visible items in carousels
   useEffect(() => {
@@ -367,13 +356,6 @@ export default function LandingPage() {
         showToast({ text: `Added ${name} to wishlist.`, tone: "success" });
         return [...current, id];
       }
-    });
-  };
-
-  const trackProductView = (prod: ProductItem) => {
-    setRecentlyViewed((current) => {
-      const filtered = current.filter((id) => id !== prod.id);
-      return [prod.id, ...filtered].slice(0, 4);
     });
   };
 
@@ -737,7 +719,6 @@ export default function LandingPage() {
                 <article
                   className="productCard reveal"
                   key={item.id}
-                  onClick={() => trackProductView(item)}
                 >
                   <div className="productImageContainer">
                     <Image src={item.image} alt={item.name} width={400} height={280} className="productImg" />
@@ -776,26 +757,7 @@ export default function LandingPage() {
             })}
           </div>
 
-          {/* RECENTLY VIEWED */}
-          {recentlyViewed.length > 0 && (
-            <div className="recentlyViewedSection reveal">
-              <h3>Recently Viewed</h3>
-              <div className="recentlyViewedGrid">
-                {recentlyViewed
-                  .map((id) => products.find((p) => p.id === id))
-                  .filter((p): p is ProductItem => !!p)
-                  .map((item) => (
-                    <div className="viewedItem" key={item.id} onClick={() => addToCart(item)}>
-                      <Image src={item.image} alt={item.name} width={80} height={60} />
-                      <div>
-                        <strong>{item.name}</strong>
-                        <span>${item.price}</span>
-                      </div>
-                    </div>
-                  ))}
-              </div>
-            </div>
-          )}
+
         </section>
 
         {/* MOTION CAROUSEL */}
