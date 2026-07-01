@@ -780,6 +780,9 @@ h1 span {
   display: flex;
   gap: 18px;
   transition: transform 300ms ease;
+  --slide-width: min(34rem, 82vw);
+  --slide-gap: 18px;
+  transform: translateX(calc(var(--motion-index, 0) * -1 * (var(--slide-width) + var(--slide-gap))));
 }
 
 .motionCard {
@@ -811,6 +814,9 @@ h1 span {
   display: flex;
   gap: 20px;
   transition: transform 300ms ease;
+  --slide-width: min(26rem, 82vw);
+  --slide-gap: 20px;
+  transform: translateX(calc(var(--review-index, 0) * -1 * (var(--slide-width) + var(--slide-gap))));
 }
 
 .reviewCard {

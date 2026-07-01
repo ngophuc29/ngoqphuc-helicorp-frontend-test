@@ -849,7 +849,7 @@ export default function LandingPage() {
               </button>
             </div>
           </div>
-          <div className="motionRail" style={{ transform: `translateX(calc(${motionIndex} * -34rem))` }}>
+          <div className="motionRail" style={{ "--motion-index": motionIndex } as React.CSSProperties}>
             {motionImages.map((image, idx) => (
               <div className="motionCard" key={`${image.src}-${idx}`}>
                 <Image src={image.src} alt={image.alt} width={1688} height={928} sizes="(max-width: 700px) 86vw, 34rem" />
@@ -885,7 +885,7 @@ export default function LandingPage() {
             onTouchEnd={handleTouchEndReviews}
             onWheel={handleWheelReviews}
           >
-            <div className="reviewRail" style={{ transform: `translateX(calc(${reviewIndex} * -27rem))` }}>
+            <div className="reviewRail" style={{ "--review-index": reviewIndex } as React.CSSProperties}>
               {product.reviews.map((review, idx) => (
                 <article className="reviewCard reveal" key={idx}>
                   <div className="stars" aria-label="5 star rating">
