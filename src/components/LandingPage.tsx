@@ -69,40 +69,98 @@ export default function LandingPage() {
   const [reviewsHovered, setReviewsHovered] = useState(false);
   const [motionHovered, setMotionHovered] = useState(false);
 
-  const touchStartReviews = useRef<number | null>(null);
-  const touchStartMotion = useRef<number | null>(null);
+  // Touch tracking refs
+  const touchStartReviewsX = useRef<number | null>(null);
+  const touchStartReviewsY = useRef<number | null>(null);
+  const touchStartMotionX = useRef<number | null>(null);
+  const touchStartMotionY = useRef<number | null>(null);
+
+  // Wheel / Trackpad tracking refs
+  const wheelAccumulatorMotion = useRef(0);
+  const wheelCooldownMotion = useRef(false);
+  const wheelAccumulatorReviews = useRef(0);
+  const wheelCooldownReviews = useRef(false);
 
   // Touch handlers for mobile swipe
   const handleTouchStartReviews = (e: React.TouchEvent) => {
-    touchStartReviews.current = e.touches[0].clientX;
+    touchStartReviewsX.current = e.touches[0].clientX;
+    touchStartReviewsY.current = e.touches[0].clientY;
   };
 
   const handleTouchEndReviews = (e: React.TouchEvent) => {
-    if (touchStartReviews.current === null) return;
+    if (touchStartReviewsX.current === null || touchStartReviewsY.current === null) return;
     const touchEndX = e.changedTouches[0].clientX;
-    const diffX = touchStartReviews.current - touchEndX;
-    if (diffX > 50) {
-      moveReview(1);
-    } else if (diffX < -50) {
-      moveReview(-1);
+    const touchEndY = e.changedTouches[0].clientY;
+    const diffX = touchStartReviewsX.current - touchEndX;
+    const diffY = touchStartReviewsY.current - touchEndY;
+
+    // Slide only if horizontal movement is dominant and meets threshold
+    if (Math.abs(diffX) > Math.abs(diffY) && Math.abs(diffX) > 40) {
+      moveReview(diffX > 0 ? 1 : -1);
     }
-    touchStartReviews.current = null;
+    touchStartReviewsX.current = null;
+    touchStartReviewsY.current = null;
   };
 
   const handleTouchStartMotion = (e: React.TouchEvent) => {
-    touchStartMotion.current = e.touches[0].clientX;
+    touchStartMotionX.current = e.touches[0].clientX;
+    touchStartMotionY.current = e.touches[0].clientY;
   };
 
   const handleTouchEndMotion = (e: React.TouchEvent) => {
-    if (touchStartMotion.current === null) return;
+    if (touchStartMotionX.current === null || touchStartMotionY.current === null) return;
     const touchEndX = e.changedTouches[0].clientX;
-    const diffX = touchStartMotion.current - touchEndX;
-    if (diffX > 50) {
-      moveMotion(1);
-    } else if (diffX < -50) {
-      moveMotion(-1);
+    const touchEndY = e.changedTouches[0].clientY;
+    const diffX = touchStartMotionX.current - touchEndX;
+    const diffY = touchStartMotionY.current - touchEndY;
+
+    // Slide only if horizontal movement is dominant and meets threshold
+    if (Math.abs(diffX) > Math.abs(diffY) && Math.abs(diffX) > 40) {
+      moveMotion(diffX > 0 ? 1 : -1);
     }
-    touchStartMotion.current = null;
+    touchStartMotionX.current = null;
+    touchStartMotionY.current = null;
+  };
+
+  // Trackpad / Mouse wheel horizontal swipe handlers
+  const handleWheelMotion = (e: React.WheelEvent) => {
+    if (Math.abs(e.deltaX) > Math.abs(e.deltaY)) {
+      e.preventDefault();
+      if (wheelCooldownMotion.current) return;
+
+      wheelAccumulatorMotion.current += e.deltaX;
+
+      if (Math.abs(wheelAccumulatorMotion.current) > 50) {
+        const direction = wheelAccumulatorMotion.current > 0 ? 1 : -1;
+        moveMotion(direction);
+
+        wheelAccumulatorMotion.current = 0;
+        wheelCooldownMotion.current = true;
+        setTimeout(() => {
+          wheelCooldownMotion.current = false;
+        }, 500);
+      }
+    }
+  };
+
+  const handleWheelReviews = (e: React.WheelEvent) => {
+    if (Math.abs(e.deltaX) > Math.abs(e.deltaY)) {
+      e.preventDefault();
+      if (wheelCooldownReviews.current) return;
+
+      wheelAccumulatorReviews.current += e.deltaX;
+
+      if (Math.abs(wheelAccumulatorReviews.current) > 50) {
+        const direction = wheelAccumulatorReviews.current > 0 ? 1 : -1;
+        moveReview(direction);
+
+        wheelAccumulatorReviews.current = 0;
+        wheelCooldownReviews.current = true;
+        setTimeout(() => {
+          wheelCooldownReviews.current = false;
+        }, 500);
+      }
+    }
   };
 
   const maxMotionIndex = Math.max(0, motionImages.length - visibleMotion);
@@ -769,8 +827,6 @@ export default function LandingPage() {
               );
             })}
           </div>
-
-
         </section>
 
         {/* MOTION CAROUSEL */}
@@ -780,6 +836,7 @@ export default function LandingPage() {
           onMouseLeave={() => setMotionHovered(false)}
           onTouchStart={handleTouchStartMotion}
           onTouchEnd={handleTouchEndMotion}
+          onWheel={handleWheelMotion}
         >
           <div className="motionHeader reveal">
             <h2>In Motion.</h2>
@@ -826,6 +883,7 @@ export default function LandingPage() {
             className="reviewViewport"
             onTouchStart={handleTouchStartReviews}
             onTouchEnd={handleTouchEndReviews}
+            onWheel={handleWheelReviews}
           >
             <div className="reviewRail" style={{ transform: `translateX(calc(${reviewIndex} * -27rem))` }}>
               {product.reviews.map((review, idx) => (
