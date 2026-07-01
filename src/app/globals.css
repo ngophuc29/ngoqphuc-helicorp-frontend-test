@@ -274,14 +274,7 @@ h1 span {
   height: auto;
 }
 
-.heroVisual img {
-  opacity: 0;
-  transition: opacity 240ms ease;
-}
 
-.heroVisual.loaded img {
-  opacity: 1;
-}
 
 .imageSkeleton {
   position: absolute;

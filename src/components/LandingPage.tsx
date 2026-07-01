@@ -43,9 +43,7 @@ export default function LandingPage() {
   const [formStatus, setFormStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
   const [motionIndex, setMotionIndex] = useState(0);
   const [chatOpen, setChatOpen] = useState(false);
-  const [heroLoaded, setHeroLoaded] = useState(false);
   const [parallaxY, setParallaxY] = useState(0);
-  const heroImageRef = useRef<HTMLImageElement>(null);
 
   // E-commerce states
   const [cart, setCart] = useState<CartItem[]>([]);
@@ -234,13 +232,6 @@ export default function LandingPage() {
     }, 0);
 
     return () => window.clearTimeout(timer);
-  }, []);
-
-  // Check if hero image loaded before hydration
-  useEffect(() => {
-    if (heroImageRef.current && heroImageRef.current.complete) {
-      setHeroLoaded(true);
-    }
   }, []);
 
   // Save to localStorage when states change
@@ -656,17 +647,14 @@ export default function LandingPage() {
               </a>
             </div>
           </div>
-          <div className={heroLoaded ? "heroVisual reveal loaded" : "heroVisual reveal"} style={{ transform: `translateY(${parallaxY}px)` }}>
-            {!heroLoaded ? <span className="imageSkeleton" aria-hidden="true" /> : null}
-             <Image
-              ref={heroImageRef}
+          <div className="heroVisual reveal" style={{ transform: `translateY(${parallaxY}px)` }}>
+            <Image
               src="/images/auraband-hero.png"
               alt="AuraBand X floating smart fitness wearable"
               width={1264}
               height={864}
               priority
               sizes="(max-width: 900px) 92vw, 46vw"
-              onLoad={() => setHeroLoaded(true)}
             />
           </div>
         </section>
